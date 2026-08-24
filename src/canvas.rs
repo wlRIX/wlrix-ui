@@ -45,8 +45,11 @@ impl<'a> Canvas<'a> {
     /// Paint every pixel one color.
     pub fn clear(&mut self, color: Rgb) {
         let bytes = color.0.to_ne_bytes();
-        for pixel in self.pixels.chunks_exact_mut(4) {
-            pixel.copy_from_slice(&bytes);
+        // `as_chunks_mut` over `chunks_exact_mut(4)`: the chunk size is a constant, so the
+        // array form lets the compiler drop the length check per pixel. The remainder is
+        // discarded because a `wl_shm` buffer is whole pixels by construction.
+        for pixel in self.pixels.as_chunks_mut::<4>().0 {
+            *pixel = bytes;
         }
     }
 

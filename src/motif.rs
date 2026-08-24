@@ -5,7 +5,11 @@
 //! resolves each [`Shade`](crate::bevel::Shade) to a color and fills. The compositor has its
 //! own sink that emits GPU quads from the same geometry.
 
-use crate::bevel::{self, Bevel, Run, Shade};
+use crate::bevel::{self, Run, Shade};
+
+// Re-exported: a bevel is the Motif bevel, and a caller drawing a panel should not have to
+// know that the geometry it is built from lives one module over.
+pub use crate::bevel::Bevel;
 
 use crate::canvas::{Canvas, Rect};
 use crate::color::Rgb;
