@@ -27,8 +27,8 @@ pub const FIELD_PX: f32 = 15.0;
 /// A Motif push button: a raised face with a centred label, sunken and nudged when pressed.
 pub fn button(
     canvas: &mut Canvas,
-    fonts: &mut Fonts,
     palette: &Palette,
+    fonts: &mut Fonts,
     rect: Rect,
     label: &str,
     pressed: bool,
@@ -80,8 +80,8 @@ pub fn button(
 /// on somebody's event loop and this function draws one frame.
 pub fn text_field(
     canvas: &mut Canvas,
-    fonts: &mut Fonts,
     palette: &Palette,
+    fonts: &mut Fonts,
     rect: Rect,
     text: &str,
     focused: bool,
@@ -165,13 +165,13 @@ mod tests {
         let mut buf = Vec::new();
         let mut c = canvas(&mut buf, 60, 24);
         let mut fonts = Fonts::load().expect("system fonts");
-        button(&mut c, &mut fonts, p, rect, "Login", false);
+        button(&mut c, p, &mut fonts, rect, "Login", false);
         assert_eq!(c.get(30, 0), p.face_top_shadow, "raised: light on top");
         assert_eq!(c.get(30, 23), p.face_bottom_shadow);
 
         let mut buf = Vec::new();
         let mut c = canvas(&mut buf, 60, 24);
-        button(&mut c, &mut fonts, p, rect, "Login", true);
+        button(&mut c, p, &mut fonts, rect, "Login", true);
         assert_eq!(c.get(30, 0), p.face_bottom_shadow, "pressed: it inverts");
         assert_eq!(c.get(30, 23), p.face_top_shadow);
     }
@@ -185,12 +185,12 @@ mod tests {
         let mut buf = Vec::new();
         let mut c = canvas(&mut buf, 80, 26);
         let mut fonts = Fonts::load().expect("system fonts");
-        text_field(&mut c, &mut fonts, p, rect, "", false, false);
+        text_field(&mut c, p, &mut fonts, rect, "", false, false);
         assert_ne!(c.get(40, inset), p.outer_line);
 
         let mut buf = Vec::new();
         let mut c = canvas(&mut buf, 80, 26);
-        text_field(&mut c, &mut fonts, p, rect, "", true, false);
+        text_field(&mut c, p, &mut fonts, rect, "", true, false);
         assert_eq!(c.get(40, inset), p.outer_line);
     }
 
@@ -203,7 +203,7 @@ mod tests {
         let mut lit = |caret_on: bool| {
             let mut buf = vec![0u8; 80 * 26 * 4];
             let mut c = Canvas::new(&mut buf, 80, 26);
-            text_field(&mut c, &mut fonts, p, rect, "", true, caret_on);
+            text_field(&mut c, p, &mut fonts, rect, "", true, caret_on);
             let thickness = p.metrics.shadow_thickness_text;
             let x = rect.left() + p.metrics.text_margin_width + thickness;
             // Strictly inside the focus keyline, which is drawn in the same black and would
