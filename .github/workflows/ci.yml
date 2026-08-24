@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # No system dependencies to install. This crate holds no Wayland connection and links
+      # no C library: it draws into a byte slice the caller owns, and every dependency is
+      # pure Rust.
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - name: Format
+        run: cargo fmt --all --check
+      - name: Clippy
+        # `--all-features` rather than the default set: `image` is off by default, so the
+        # default build would never compile it and it would rot.
+        run: cargo clippy --all-targets --all-features -- -D warnings
+      - name: Build
+        run: cargo build --verbose --all-features
+      - name: Test
+        run: cargo test --verbose --all-features

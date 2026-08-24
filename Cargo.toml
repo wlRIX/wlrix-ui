@@ -1,0 +1,30 @@
+[package]
+name = "wlrix-ui"
+version = "0.1.0"
+edition = "2024"
+license = "GPL-3.0-or-later"
+description = "wlRIX shared UI — the Motif drawing primitives and the runtime colour palette."
+repository = "https://github.com/wlrix/wlrix-ui"
+publish = false
+
+[dependencies]
+# Text: shaping plus system-font fallback, so a CJK or RTL name renders rather than
+# tofu. The version the greeter, the desktop and the compositor already agree on --
+# unifying them here is half the point of the crate.
+cosmic-text = { version = "0.12", optional = true }
+# Rasterizing icons. The magic carpet is SVG, and so is most of what a modern icon theme
+# ships. `raster-images` is off: PNG is decoded directly (below), and the rest of that
+# feature is GIF/JPEG/WebP support for `<image>` elements, which an icon has no business
+# containing.
+resvg = { version = "0.47.0", default-features = false, features = ["text", "system-fonts"], optional = true }
+# Themes still ship plenty of PNG. Decoding it directly rather than through `image` keeps
+# the dependency to the one format that actually turns up.
+png = { version = "0.18", optional = true }
+
+[features]
+# The palette and the pixel primitives are always there; they carry no dependencies at
+# all. Text and images are opt-in because not every consumer draws both -- `wlrix-bg`
+# draws neither, and only `wlrix-desktop` loads image files.
+default = ["text"]
+text = ["dep:cosmic-text"]
+image = ["dep:resvg", "dep:png"]
