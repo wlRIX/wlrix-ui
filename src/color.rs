@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-//! A colour.
+//! A color.
 
 /// A color, packed as native-endian ARGB.
 ///

@@ -46,7 +46,7 @@ pub fn outline(canvas: &mut Canvas, rect: Rect, color: Rgb) {
     canvas.stroke_rect(rect, color);
 }
 
-/// Motif's etched separator: a dark line with a light one under it, centred in `row`.
+/// Motif's etched separator: a dark line with a light one under it, centered in `row`.
 ///
 /// The two-line etch reads as a groove cut into the surface rather than a drawn rule, which
 /// is why it is a pair and not one line. Used between menu sections, by both the compositor's

@@ -21,7 +21,7 @@ It is a library. It installs nothing and has no `just install`.
 | `text`    | one cosmic-text setup: shaping, metrics, wrapping, and two output sinks |
 | `mask`    | an 8-bit coverage bitmap, for artwork tinted by its state               |
 | `image`   | SVG and PNG decoded to premultiplied `Argb8888` (feature `image`)       |
-| `palette` | the generated colour schemes                                            |
+| `palette` | the generated color schemes                                             |
 
 Layout, hit-testing and event handling are deliberately absent. They are what each component *is*, and a shared widget
 that owned them would have to know about three different event loops.

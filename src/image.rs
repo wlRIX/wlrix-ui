@@ -149,7 +149,7 @@ fn decode(path: &Path, size: i32) -> Option<Image> {
 
 /// Rasterize an SVG at exactly `size` square.
 ///
-/// Aspect ratio is kept: a non-square drawing is scaled to fit and centred, so a wide icon
+/// Aspect ratio is kept: a non-square drawing is scaled to fit and centered, so a wide icon
 /// does not come out stretched.
 fn from_svg(bytes: &[u8], size: i32) -> Option<Image> {
     use resvg::tiny_skia;
@@ -208,7 +208,7 @@ fn from_png(bytes: &[u8], size: i32) -> Option<Image> {
         return None;
     }
     // After normalizing there are only these four, all 8 bits per channel.
-    let (channels, grey) = match info.color_type {
+    let (channels, gray) = match info.color_type {
         png::ColorType::Rgba => (4, false),
         png::ColorType::Rgb => (3, false),
         png::ColorType::GrayscaleAlpha => (2, true),
@@ -226,9 +226,9 @@ fn from_png(bytes: &[u8], size: i32) -> Option<Image> {
             let offset = ((source_y * width + source_x) * channels) as usize;
             // Gray expands to three equal channels; the alpha is the last one when there is
             // one, and opaque otherwise.
-            let (red, green, blue) = if grey {
-                let grey = buffer[offset];
-                (grey, grey, grey)
+            let (red, green, blue) = if gray {
+                let gray = buffer[offset];
+                (gray, gray, gray)
             } else {
                 (buffer[offset], buffer[offset + 1], buffer[offset + 2])
             };
@@ -308,18 +308,18 @@ mod tests {
 
     /// A tiny PNG in the given color type, built here so the test does not depend on what
     /// happens to be installed.
-    fn png_bytes(colour: png::ColorType, depth: png::BitDepth) -> Vec<u8> {
+    fn png_bytes(color: png::ColorType, depth: png::BitDepth) -> Vec<u8> {
         let mut out = Vec::new();
         {
             let mut encoder = png::Encoder::new(&mut out, 4, 4);
-            encoder.set_color(colour);
+            encoder.set_color(color);
             encoder.set_depth(depth);
-            if colour == png::ColorType::Indexed {
+            if color == png::ColorType::Indexed {
                 // A four-color palette, and pixels indexing into it.
                 encoder.set_palette(vec![255, 0, 0, 0, 255, 0, 0, 0, 255, 255, 255, 255]);
             }
             let mut writer = encoder.write_header().expect("header");
-            let data: Vec<u8> = match colour {
+            let data: Vec<u8> = match color {
                 png::ColorType::Indexed => (0..16).map(|i| i % 4).collect(),
                 png::ColorType::Grayscale => vec![128; 16],
                 png::ColorType::GrayscaleAlpha => vec![128; 32],
@@ -334,22 +334,22 @@ mod tests {
     #[test]
     fn every_png_flavour_a_theme_ships_decodes() {
         // The one that caught this: `/usr/share/pixmaps/archlinux-logo.png` is 8-bit
-        // *colormap*, and rejecting palettes meant it silently failed to load. Greyscale and
+        // *colormap*, and rejecting palettes meant it silently failed to load. Grayscale and
         // 16-bit turn up in themes too.
-        for (colour, depth) in [
+        for (color, depth) in [
             (png::ColorType::Rgba, png::BitDepth::Eight),
             (png::ColorType::Rgb, png::BitDepth::Eight),
             (png::ColorType::Indexed, png::BitDepth::Eight),
             (png::ColorType::Grayscale, png::BitDepth::Eight),
             (png::ColorType::GrayscaleAlpha, png::BitDepth::Eight),
         ] {
-            let bytes = png_bytes(colour, depth);
+            let bytes = png_bytes(color, depth);
             let image = from_png(&bytes, 16)
-                .unwrap_or_else(|| panic!("{colour:?} at {depth:?} failed to decode"));
-            assert_eq!((image.width, image.height), (16, 16), "{colour:?}");
+                .unwrap_or_else(|| panic!("{color:?} at {depth:?} failed to decode"));
+            assert_eq!((image.width, image.height), (16, 16), "{color:?}");
             assert!(
                 image.pixels.iter().any(|pixel| alpha(*pixel) != 0),
-                "{colour:?} decoded to nothing"
+                "{color:?} decoded to nothing"
             );
         }
     }

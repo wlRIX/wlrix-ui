@@ -169,10 +169,10 @@ impl Fonts {
         );
     }
 
-    /// The baseline that centres one line of `face`/`px` text vertically in `rect`.
+    /// The baseline that centers one line of `face`/`px` text vertically in `rect`.
     ///
     /// There were three of these, and no two agreed: the greeter's button labels, the
-    /// desktop's menu rows and the compositor's window titles each centred text with their
+    /// desktop's menu rows and the compositor's window titles each centered text with their
     /// own arithmetic and their own fudge constant. Rows of the same nominal height in two
     /// components did not line up.
     pub fn centered_baseline(&mut self, face: Face, px: f32, rect: Rect) -> i32 {

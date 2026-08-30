@@ -24,7 +24,7 @@ pub const BUTTON_PX: f32 = 14.0;
 /// Text size in a single-line field.
 pub const FIELD_PX: f32 = 15.0;
 
-/// A Motif push button: a raised face with a centred label, sunken and nudged when pressed.
+/// A Motif push button: a raised face with a centered label, sunken and nudged when pressed.
 pub fn button(
     canvas: &mut Canvas,
     palette: &Palette,
@@ -131,7 +131,7 @@ pub fn text_field(
     }
 }
 
-/// The triangular glyph on a scrollbar's stepper, centred in `button`.
+/// The triangular glyph on a scrollbar's stepper, centered in `button`.
 pub fn arrow(canvas: &mut Canvas, palette: &Palette, button: Rect, up: bool) {
     let cx = button.x + button.w / 2;
     let cy = button.y + button.h / 2;

@@ -3,7 +3,7 @@ name = "wlrix-ui"
 version = "0.1.0"
 edition = "2024"
 license = "GPL-3.0-or-later"
-description = "wlRIX shared UI — the Motif drawing primitives and the runtime colour palette."
+description = "wlRIX shared UI — the Motif drawing primitives and the runtime color palette."
 repository = "https://github.com/wlrix/wlrix-ui"
 publish = false
 
