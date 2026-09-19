@@ -24,7 +24,15 @@ png = { version = "0.18", optional = true }
 [features]
 # The palette and the pixel primitives are always there; they carry no dependencies at
 # all. Text and images are opt-in because not every consumer draws both -- `wlrix-bg`
-# draws neither, and only `wlrix-desktop` loads image files.
+# draws neither.
+#
+# The two decoders are separate features because their costs are not comparable: `png` is
+# one small parser, while `svg` drags in resvg, usvg, tiny-skia and a font database. A
+# consumer that only ever reads PNG -- `wlrix-compositor`, for its minimized-window icons --
+# should not pay for the rest. `image` is the union, which is what every consumer asked for
+# before the split, so none of them had to change.
 default = ["text"]
 text = ["dep:cosmic-text"]
-image = ["dep:resvg", "dep:png"]
+png = ["dep:png"]
+svg = ["dep:resvg"]
+image = ["png", "svg"]

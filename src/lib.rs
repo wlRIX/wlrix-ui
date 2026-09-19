@@ -31,7 +31,7 @@
 pub mod bevel;
 pub mod canvas;
 pub mod color;
-#[cfg(feature = "image")]
+#[cfg(any(feature = "png", feature = "svg"))]
 pub mod image;
 pub mod mask;
 pub mod motif;
