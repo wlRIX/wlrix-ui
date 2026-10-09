@@ -17,6 +17,8 @@
 //! - [`text`]: one cosmic-text setup for all three, including the system-font-directory
 //!   workaround the greeter needs under greetd and the compositor silently lacked.
 //! - [`palette`]: the generated color schemes, as values a running program can swap.
+//! - [`icon_state`]: how an icon shows rest, hover and selection -- the one rule the desktop's
+//!   icons and the greeter's user pictures both follow.
 //!
 //! # What is deliberately not here
 //!
@@ -31,6 +33,7 @@
 pub mod bevel;
 pub mod canvas;
 pub mod color;
+pub mod icon_state;
 #[cfg(any(feature = "png", feature = "svg"))]
 pub mod image;
 pub mod mask;
@@ -44,4 +47,5 @@ pub mod widget;
 
 pub use canvas::{Canvas, Rect};
 pub use color::Rgb;
+pub use icon_state::IconState;
 pub use palette::Palette;

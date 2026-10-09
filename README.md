@@ -11,17 +11,18 @@ It is a library. It installs nothing and has no `just install`.
 
 ## What is in it
 
-| Module    |                                                                         |
-|-----------|-------------------------------------------------------------------------|
-| `color`   | `Rgb`, packed native-endian ARGB                                        |
-| `canvas`  | `Canvas`, a borrowed `wl_shm` `Argb8888` surface, and `Rect`            |
-| `bevel`   | Motif bevel geometry with no opinion about where the pixels go          |
-| `motif`   | the canvas sink for that geometry: `panel`, `draw`, `outline`, `groove` |
-| `widget`  | `button`, `text_field`, `arrow`                                         |
-| `text`    | one cosmic-text setup: shaping, metrics, wrapping, and two output sinks |
-| `mask`    | an 8-bit coverage bitmap, for artwork tinted by its state               |
-| `image`   | SVG and PNG decoded to premultiplied `Argb8888` (feature `image`)       |
-| `palette` | the generated color schemes                                             |
+| Module       |                                                                         |
+|--------------|-------------------------------------------------------------------------|
+| `color`      | `Rgb`, packed native-endian ARGB                                        |
+| `canvas`     | `Canvas`, a borrowed `wl_shm` `Argb8888` surface, and `Rect`            |
+| `bevel`      | Motif bevel geometry with no opinion about where the pixels go          |
+| `motif`      | the canvas sink for that geometry: `panel`, `draw`, `outline`, `groove` |
+| `widget`     | `button`, `text_field`, `arrow`                                         |
+| `text`       | one cosmic-text setup: shaping, metrics, wrapping, and two output sinks |
+| `mask`       | an 8-bit coverage bitmap, for artwork tinted by its state               |
+| `image`      | SVG and PNG decoded to premultiplied `Argb8888` (feature `image`)       |
+| `palette`    | the generated color schemes                                             |
+| `icon_state` | IRIX's rest/hover/selected rule: only an icon's light body changes      |
 
 Layout, hit-testing and event handling are deliberately absent. They are what each component *is*, and a shared widget
 that owned them would have to know about three different event loops.

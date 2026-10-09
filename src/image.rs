@@ -29,6 +29,8 @@ use std::path::{Path, PathBuf};
 
 use crate::canvas::Canvas;
 use crate::color::Rgb;
+use crate::icon_state::IconState;
+use crate::palette::Palette;
 
 /// A decoded icon: premultiplied `Argb8888`, ready to composite.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -88,9 +90,9 @@ impl Image {
     /// by yellow the body goes yellow and the outline stays black, which is the tint reading
     /// as a highlight. Replaced by yellow it would be a yellow blob.
     ///
-    /// This is what gives a launcher the same gray/white/yellow states as the drawn-in-code
-    /// icons **without** recoloring the application's own artwork, which wants its own
-    /// colors: the carpet is tinted, the symbol standing on it is not.
+    /// **Not for showing an icon's state** -- that is [`Image::in_state`], which leaves the
+    /// shadow alone where this would tint it too. This stays for a drawing that really should
+    /// take one color all over.
     pub fn multiplied(&self, tint: Rgb) -> Image {
         let (r, g, b) = tint.channels();
         let pixels = self
@@ -104,6 +106,28 @@ impl Image {
                     | (scale((pixel >> 16) & 0xff, r) << 16)
                     | (scale((pixel >> 8) & 0xff, g) << 8)
                     | scale(pixel & 0xff, b)
+            })
+            .collect();
+        Image {
+            width: self.width,
+            height: self.height,
+            pixels,
+        }
+    }
+
+    /// The image as an icon in `state`: its light body recolored, everything else as drawn.
+    ///
+    /// The rule is [`IconState::paint`]'s -- see [`crate::icon_state`] for why it replaced
+    /// [`Image::multiplied`] for icons. The checkerboard at rest is anchored to the image's own
+    /// top-left pixel.
+    pub fn in_state(&self, state: IconState, palette: &Palette) -> Image {
+        let pixels = self
+            .pixels
+            .iter()
+            .enumerate()
+            .map(|(i, &pixel)| {
+                let (x, y) = ((i as i32) % self.width, (i as i32) / self.width);
+                state.paint_premultiplied(palette, x, y, pixel)
             })
             .collect();
         Image {
