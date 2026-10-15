@@ -41,6 +41,12 @@ pub enum IconState {
     Hover,
     /// Picked.
     Selected,
+    /// Picked, in a window that does not have the keyboard. IRIX knocked the yellow back the
+    /// way it knocked a resting icon back: the same checkerboard, with the selection yellow
+    /// where the rest state has white -- measured off an IRIX screen, `#ffff00` and `#c9c9c9`
+    /// pixel for pixel. So the selection that keys would act on is the one drawn solid. A
+    /// window's business: the desktop never holds the keyboard and has no use for it.
+    SelectedInactive,
     /// What stays behind where a dragged icon was picked up: IRIX left a dark gray ghost of it
     /// there for as long as the drag lasted, while the icon itself -- [`IconState::Selected`]
     /// -- followed the pointer.
@@ -73,6 +79,8 @@ impl IconState {
             IconState::Normal => palette.icon_tint,
             IconState::Hover => palette.icon_tint_hover,
             IconState::Selected => palette.icon_tint_selected,
+            IconState::SelectedInactive if (x + y).rem_euclid(2) == 0 => palette.icon_tint_selected,
+            IconState::SelectedInactive => palette.icon_tint,
             IconState::Ghost => palette.icon_tint_ghost,
             IconState::DropTarget => palette.icon_tint_drop,
         }
@@ -86,6 +94,8 @@ impl IconState {
             IconState::Normal => palette.icon_tint,
             IconState::Hover => palette.icon_tint_hover,
             IconState::Selected => palette.icon_tint_selected,
+            // A mask cannot carry the checkerboard, and selected is what it has to say.
+            IconState::SelectedInactive => palette.icon_tint_selected,
             IconState::Ghost => palette.icon_tint_ghost,
             IconState::DropTarget => palette.icon_tint_drop,
         }
@@ -98,6 +108,8 @@ impl IconState {
             IconState::Normal => palette.outer_line,
             IconState::Hover => palette.icon_tint_hover,
             IconState::Selected => palette.icon_tint_selected,
+            // A frame is one color, so it cannot carry the checkerboard either.
+            IconState::SelectedInactive => palette.icon_tint_selected,
             IconState::Ghost => palette.icon_tint_ghost,
             IconState::DropTarget => palette.icon_tint_drop,
         }
@@ -108,7 +120,11 @@ impl IconState {
     pub fn frame_width(self) -> i32 {
         match self {
             IconState::Normal => 1,
-            IconState::Hover | IconState::Selected | IconState::Ghost | IconState::DropTarget => 2,
+            IconState::Hover
+            | IconState::Selected
+            | IconState::SelectedInactive
+            | IconState::Ghost
+            | IconState::DropTarget => 2,
         }
     }
 
@@ -200,7 +216,24 @@ mod tests {
             );
         }
         assert_eq!(p.icon_tint_ghost, Rgb(0xff_555555));
+
         assert_eq!(p.icon_tint_drop, Rgb(0xff_0000ff));
+    }
+
+    #[test]
+    fn selected_without_the_keyboard_is_the_rest_checkerboard_in_yellow() {
+        // Measured off IRIX: a selected folder in a window without input focus is #ffff00 and
+        // #c9c9c9, alternating pixel by pixel -- the rest state's stipple with yellow for white.
+        let p = palette();
+        let white = [255; 4];
+        let state = IconState::SelectedInactive;
+        assert_eq!(state.paint(p, 0, 0, white), opaque(p.icon_tint_selected));
+        assert_eq!(state.paint(p, 1, 1, white), opaque(p.icon_tint_selected));
+        assert_eq!(state.paint(p, 1, 0, white), opaque(p.icon_tint));
+        assert_eq!(state.paint(p, 0, 1, white), opaque(p.icon_tint));
+        // In the same phase as the rest state's, so an icon changing between the two does not
+        // shift its pattern by a pixel.
+        assert_eq!(IconState::Normal.paint(p, 1, 0, white), opaque(p.icon_tint));
     }
 
     #[test]
@@ -227,6 +260,7 @@ mod tests {
             IconState::Normal,
             IconState::Hover,
             IconState::Selected,
+            IconState::SelectedInactive,
             IconState::Ghost,
             IconState::DropTarget,
         ] {
