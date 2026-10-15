@@ -166,6 +166,6 @@ mod tests {
         for name in Palette::ROLE_NAMES {
             assert!(p.role(name).is_some(), "{name} is listed but not readable");
         }
-        assert_eq!(Palette::ROLE_NAMES.len(), 66);
+        assert_eq!(Palette::ROLE_NAMES.len(), 68);
     }
 }

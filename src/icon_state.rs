@@ -41,6 +41,12 @@ pub enum IconState {
     Hover,
     /// Picked.
     Selected,
+    /// What stays behind where a dragged icon was picked up: IRIX left a dark gray ghost of it
+    /// there for as long as the drag lasted, while the icon itself -- [`IconState::Selected`]
+    /// -- followed the pointer.
+    Ghost,
+    /// An icon that will accept what is being dragged over it, which IRIX turned royal blue.
+    DropTarget,
 }
 
 impl IconState {
@@ -67,6 +73,8 @@ impl IconState {
             IconState::Normal => palette.icon_tint,
             IconState::Hover => palette.icon_tint_hover,
             IconState::Selected => palette.icon_tint_selected,
+            IconState::Ghost => palette.icon_tint_ghost,
+            IconState::DropTarget => palette.icon_tint_drop,
         }
     }
 
@@ -78,6 +86,8 @@ impl IconState {
             IconState::Normal => palette.icon_tint,
             IconState::Hover => palette.icon_tint_hover,
             IconState::Selected => palette.icon_tint_selected,
+            IconState::Ghost => palette.icon_tint_ghost,
+            IconState::DropTarget => palette.icon_tint_drop,
         }
     }
 
@@ -88,6 +98,8 @@ impl IconState {
             IconState::Normal => palette.outer_line,
             IconState::Hover => palette.icon_tint_hover,
             IconState::Selected => palette.icon_tint_selected,
+            IconState::Ghost => palette.icon_tint_ghost,
+            IconState::DropTarget => palette.icon_tint_drop,
         }
     }
 
@@ -96,7 +108,7 @@ impl IconState {
     pub fn frame_width(self) -> i32 {
         match self {
             IconState::Normal => 1,
-            IconState::Hover | IconState::Selected => 2,
+            IconState::Hover | IconState::Selected | IconState::Ghost | IconState::DropTarget => 2,
         }
     }
 
@@ -171,6 +183,27 @@ mod tests {
     }
 
     #[test]
+    fn a_ghost_is_dark_gray_and_a_drop_target_royal_blue() {
+        // After the IRIX Interactive Desktop UI Guidelines' figure of icon states: what a drag
+        // leaves behind is dark gray, and the icon that will take the drop is royal blue. Solid,
+        // like hover and selection, with no stipple.
+        let p = palette();
+        let white = [255; 4];
+        for (x, y) in [(0, 0), (1, 0)] {
+            assert_eq!(
+                IconState::Ghost.paint(p, x, y, white),
+                opaque(p.icon_tint_ghost)
+            );
+            assert_eq!(
+                IconState::DropTarget.paint(p, x, y, white),
+                opaque(p.icon_tint_drop)
+            );
+        }
+        assert_eq!(p.icon_tint_ghost, Rgb(0xff_555555));
+        assert_eq!(p.icon_tint_drop, Rgb(0xff_0000ff));
+    }
+
+    #[test]
     fn at_rest_the_body_is_a_checkerboard_of_white_and_the_rest_gray() {
         let p = palette();
         let white = [255; 4];
@@ -190,7 +223,13 @@ mod tests {
         // Measured off IRIX: black and the #868686 shadow are identical in every state. The
         // icon theme's #808080 shadow, #999999 detail and the folder's tan are the same case.
         let p = palette();
-        for state in [IconState::Normal, IconState::Hover, IconState::Selected] {
+        for state in [
+            IconState::Normal,
+            IconState::Hover,
+            IconState::Selected,
+            IconState::Ghost,
+            IconState::DropTarget,
+        ] {
             for pixel in [
                 [0, 0, 0, 255],
                 [0x86, 0x86, 0x86, 255],
